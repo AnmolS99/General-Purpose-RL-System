@@ -3,6 +3,8 @@ from critic import Critic
 from pole_balancing import PoleBalancingSimWorld
 from matplotlib import pyplot as plt
 
+from towers_of_hanoi import TowersOfHanoiSimWorld
+
 
 class RLSystem():
 
@@ -96,7 +98,7 @@ class RLSystem():
                 a = a_next
 
                 # If we are in an end state, we end the episode
-                if self.sim_world.is_end_state(s):
+                if self.sim_world.is_end_state():
                     self.sim_world.end_episode()
                     break
 
@@ -112,6 +114,9 @@ class RLSystem():
 
 if __name__ == "__main__":
     pbsw = PoleBalancingSimWorld()
-    rls = RLSystem(pbsw, 500, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
+    tohsw = TowersOfHanoiSimWorld()
+    # rls = RLSystem(pbsw, 500, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
+    #                0.5, 0.01, False, 1)
+    rls = RLSystem(tohsw, 500, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
                    0.5, 0.01, False, 1)
     rls.generic_actor_critic_algorithm()

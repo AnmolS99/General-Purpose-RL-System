@@ -134,7 +134,7 @@ class PoleBalancingSimWorld:
     def x_in_range(self):
         return self.x > self.x_minus and self.x < self.x_plus
 
-    def is_end_state(self, s):
+    def is_end_state(self):
         """
         Checks whether s is an end state or not
         """
