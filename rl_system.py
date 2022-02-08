@@ -23,6 +23,7 @@ class RLSystem():
 
     def generic_actor_critic_algorithm(self):
         result_list = []
+
         # Repeating for each episode
         for i in range(self.num_episodes):
 
@@ -31,11 +32,11 @@ class RLSystem():
             self.critic.reset_elig()
 
             # Decreasing epsilon for actor, since we want less exploration as number of episodes goes up
-            self.actor.epsilon = self.actor.epsilon * (
-                1 - self.actor.epsilon_decay_rate)
+            # self.actor.epsilon = self.actor.epsilon * (
+            #     1 - self.actor.epsilon_decay_rate)
 
-            # if i % 100 == 0:
-            #     self.actor.epsilon /= (i / 100) + 1
+            if i % 100 == 0:
+                self.actor.epsilon /= (i / 100) + 1
 
             # Initializing state and action
             s = self.sim_world.begin_episode()
@@ -94,17 +95,23 @@ class RLSystem():
                 s = s_next
                 a = a_next
 
+                # If we are in an end state, we end the episode
                 if self.sim_world.is_end_state(s):
+                    self.sim_world.end_episode()
                     break
 
             result_list.append(self.sim_world.steps_taken)
 
+        # Plotting the result list
         plt.plot(result_list)
         plt.show()
+
+        # Showing the history of the best episode
+        self.sim_world.show_best_history()
 
 
 if __name__ == "__main__":
     pbsw = PoleBalancingSimWorld()
-    rls = RLSystem(pbsw, 1000, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
+    rls = RLSystem(pbsw, 500, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
                    0.5, 0.01, False, 1)
     rls.generic_actor_critic_algorithm()

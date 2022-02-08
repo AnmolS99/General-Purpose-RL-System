@@ -1,7 +1,8 @@
 import numpy as np
+from matplotlib import pyplot as plt
 
 
-class PoleBalancingSimWorld():
+class PoleBalancingSimWorld:
 
     def __init__(self, l=0.5, m_p=0.1, g=9.8, timestep=0.02) -> None:
 
@@ -24,6 +25,8 @@ class PoleBalancingSimWorld():
         self.timestep = timestep
         self.episode_len = 300
         self.steps_taken = 0
+        self.history = []
+        self.best_episode_history = []
 
     def begin_episode(self):
         # Centering the cart at the horizontal position
@@ -40,6 +43,9 @@ class PoleBalancingSimWorld():
 
         # Resetting the number of steps taken in the current episode
         self.steps_taken = 0
+
+        # Resetting the history, and adding the initial state to the history
+        self.history = [(0, self.theta)]
 
         return self.get_current_state()
 
@@ -85,7 +91,27 @@ class PoleBalancingSimWorld():
         # Increment number of steps taken
         self.steps_taken += 1
 
+        # Adding the current step to the history
+        self.history.append((self.steps_taken, self.theta))
+
         return self.get_current_state(), reward
+
+    def end_episode(self):
+        """
+        Ending the episode by saving the history if it is the best one yet
+        """
+        if len(self.history) > len(self.best_episode_history):
+            self.best_episode_history = self.history
+
+    def show_best_history(self):
+        """
+        Showing the history of the best episode
+        """
+        # Plotting the history (angle of the pole) of the bestepisode
+        timesteps = [i[0] for i in self.best_episode_history]
+        thetas = [i[1] for i in self.best_episode_history]
+        plt.plot(timesteps, thetas)
+        plt.show()
 
     def get_current_state(self):
         """
