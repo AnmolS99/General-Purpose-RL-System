@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 
 class PoleBalancingSimWorld:
 
-    def __init__(self, l=0.5, m_p=0.1, g=9.8, timestep=0.02) -> None:
+    def __init__(self, l=0.5, m_p=0.1, g=-9.8, timestep=0.02) -> None:
 
         self.l = l  # Length of the pole
         self.m_p = m_p  # Mass of the pole

@@ -35,7 +35,7 @@ class RLSystem():
             self.critic.reset_elig()
 
             # Decreasing epsilon for actor, since we want less exploration as number of episodes goes up
-            if i % (self.num_episodes // 10) == 0:
+            if i % (self.num_episodes // 100) == 0:
                 self.actor.epsilon *= (1 - self.actor.epsilon_decay_rate)
                 print(self.actor.epsilon)
 
@@ -116,22 +116,22 @@ if __name__ == "__main__":
     tohsw = TowersOfHanoiSimWorld()
     gsw = GamblerSimWorld(0.4)
 
-    # rls = RLSystem(pbsw, 500, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
-    #                0.5, 0.1, False, 1)
+    rls = RLSystem(pbsw, 200, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
+                   0.5, 0.05, False, 1)
 
     # rls = RLSystem(tohsw, 500, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
     #                0.5, 0.1, False, 1)
 
-    rls = RLSystem(gsw, 25000, 300, False, 1, 0.05, 0.05, 0.5, 0.5, 1, 1, 0.9,
-                   0.15, False, 1)
+    # rls = RLSystem(gsw, 25000, 300, False, 1, 0.05, 0.05, 0.5, 0.5, 1, 1, 0.9,
+    #                0.15, False, 1)
     rls.generic_actor_critic_algorithm()
-    wager = []
-    for i in range(1, 101):
-        wager.append(rls.actor.get_optimal_action(i, gsw.get_valid_actions(i)))
-    plt.plot(wager)
-    plt.vlines(x=[12.5, 25, 37.5, 50, 62.5, 75, 87.5],
-               ymin=[0, 0, 0, 0, 0, 0, 0],
-               ymax=[17.5, 30, 45, 50, 45, 30, 17.5],
-               colors="red",
-               linestyles="dotted")
-    plt.show()
+    # wager = []
+    # for i in range(1, 101):
+    #     wager.append(rls.actor.get_optimal_action(i, gsw.get_valid_actions(i)))
+    # plt.plot(wager)
+    # plt.vlines(x=[12.5, 25, 37.5, 50, 62.5, 75, 87.5],
+    #            ymin=[0, 0, 0, 0, 0, 0, 0],
+    #            ymax=[17.5, 30, 45, 50, 45, 30, 17.5],
+    #            colors="red",
+    #            linestyles="dotted")
+    # plt.show()
