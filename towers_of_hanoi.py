@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class TowersOfHanoiSimWorld:
@@ -99,11 +100,32 @@ class TowersOfHanoiSimWorld:
             self.best_episode_history = self.history
 
     def show_best_history(self):
+        step_nr = 0
         for step in self.best_episode_history:
             print(step)
+            self.show_state(step, step_nr)
+            step_nr += 1
+
+    def show_state(self, state, step_nr):
+        colors = ["red", "blue", "green", "yellow", "orange", "purple"]
+        figure, axes = plt.subplots()
+        heights = [0] * self.num_pegs
+        for i in range(self.num_discs):
+            r = (self.num_discs - i) * 0.05
+            if heights[state[i]] == 0:
+                heights[state[i]] = r
+            height = heights[state[i]]
+            circle = plt.Circle(((state[i] * (1 / self.num_pegs) +
+                                  (1 / self.num_pegs) / 2), height),
+                                r,
+                                color=colors[i % len(colors)])
+            heights[state[i]] += r
+            axes.add_artist(circle)
+        plt.title("Towers Of Hanoi (step number: " + str(step_nr) + ")")
+        plt.show()
 
 
 if __name__ == "__main__":
-    tohsw = TowersOfHanoiSimWorld(3, 4)
+    tohsw = TowersOfHanoiSimWorld(5, 6)
     s = tohsw.begin_episode()
     print(tohsw.get_valid_actions(s))

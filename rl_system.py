@@ -114,7 +114,7 @@ class RLSystem():
 
 if __name__ == "__main__":
     pbsw = PoleBalancingSimWorld()
-    tohsw = TowersOfHanoiSimWorld()
+    tohsw = TowersOfHanoiSimWorld(3, 4)
     # rls = RLSystem(pbsw, 500, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
     #                0.5, 0.01, False, 1)
     rls = RLSystem(tohsw, 500, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
