@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 
 class Critic():
@@ -21,7 +22,7 @@ class Critic():
         Returns the value of a state
         """
         # If no value is found for the state, return a small random number
-        return self.state_values.get(s, np.random.uniform(-0.5, 0.5))
+        return self.state_values.get(s, random.random() * 0.5)
 
     def get_elig_value(self, s):
         """

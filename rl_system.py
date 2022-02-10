@@ -1,5 +1,6 @@
 from actor import Actor
 from critic import Critic
+from gambler import GamblerSimWorld
 from pole_balancing import PoleBalancingSimWorld
 from matplotlib import pyplot as plt
 
@@ -34,11 +35,9 @@ class RLSystem():
             self.critic.reset_elig()
 
             # Decreasing epsilon for actor, since we want less exploration as number of episodes goes up
-            # self.actor.epsilon = self.actor.epsilon * (
-            #     1 - self.actor.epsilon_decay_rate)
-
-            if i % 100 == 0:
-                self.actor.epsilon /= (i / 100) + 1
+            if i % (self.num_episodes // 10) == 0:
+                self.actor.epsilon *= (1 - self.actor.epsilon_decay_rate)
+                print(self.actor.epsilon)
 
             # Initializing state and action
             s = self.sim_world.begin_episode()
@@ -56,7 +55,7 @@ class RLSystem():
                 # Performing the action a in state s and ending up in state s_next and recieving reward r
                 s_next, r = self.sim_world.next_state(a)
 
-                # Getting the action (a_next) that is optimal in state s_next
+                # Getting the action (a_next) to do in state s_next
                 a_next = self.actor.get_action(
                     s_next, self.sim_world.get_valid_actions(s_next))
 
@@ -70,7 +69,7 @@ class RLSystem():
                 self.critic.elig[s] = 1
 
                 # Going through each SAP in the current episode and updating values and policies
-                for s_curr, a_curr in reversed(episode_list):
+                for s_curr, a_curr in episode_list:
 
                     # Critic updates current states value
                     self.critic.state_values[s_curr] = (
@@ -114,9 +113,25 @@ class RLSystem():
 
 if __name__ == "__main__":
     pbsw = PoleBalancingSimWorld()
-    tohsw = TowersOfHanoiSimWorld(3, 4)
+    tohsw = TowersOfHanoiSimWorld()
+    gsw = GamblerSimWorld(0.4)
+
     # rls = RLSystem(pbsw, 500, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
-    #                0.5, 0.01, False, 1)
-    rls = RLSystem(tohsw, 500, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
-                   0.5, 0.01, False, 1)
+    #                0.5, 0.1, False, 1)
+
+    # rls = RLSystem(tohsw, 500, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
+    #                0.5, 0.1, False, 1)
+
+    rls = RLSystem(gsw, 25000, 300, False, 1, 0.05, 0.05, 0.5, 0.5, 1, 1, 0.9,
+                   0.15, False, 1)
     rls.generic_actor_critic_algorithm()
+    wager = []
+    for i in range(1, 101):
+        wager.append(rls.actor.get_optimal_action(i, gsw.get_valid_actions(i)))
+    plt.plot(wager)
+    plt.vlines(x=[12.5, 25, 37.5, 50, 62.5, 75, 87.5],
+               ymin=[0, 0, 0, 0, 0, 0, 0],
+               ymax=[17.5, 30, 45, 50, 45, 30, 17.5],
+               colors="red",
+               linestyles="dotted")
+    plt.show()
