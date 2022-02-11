@@ -22,14 +22,16 @@ class Critic():
         Returns the value of a state
         """
         # If no value is found for the state, return a small random number
-        return self.state_values.get(s, random.random() * 0.5)
+        # IMPORTANT: s is assumed to be a list and is therefore converted to tuple
+        return self.state_values.get(tuple(s), random.random() * 0.5)
 
     def get_elig_value(self, s):
         """
         Returns the eligibility trace value for a state
         """
         # If no value is found for the elibility trace of the state, return 0
-        return self.elig.get(s, 0)
+        # IMPORTANT: s is assumed to be a list and is therefore converted to tuple
+        return self.elig.get(tuple(s), 0)
 
     def reset_elig(self):
         """

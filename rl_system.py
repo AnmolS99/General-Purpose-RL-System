@@ -60,35 +60,41 @@ class RLSystem():
                     s_next, self.sim_world.get_valid_actions(s_next))
 
                 # Setting the eligibility trace in the actor to 1
-                self.actor.elig[(s, a)] = 1
+                # IMPORTANT: s is assumed to be a list and is therefore converted to tuple
+                self.actor.elig[(tuple(s), a)] = 1
 
                 # Critic calculates TD-error
                 td_error = self.critic.calculate_td_error(r, s, s_next)
 
                 # Setting the eligibility trace in the critic to 1
-                self.critic.elig[s] = 1
+                # IMPORTANT: s is assumed to be a list and is therefore converted to tuple
+                self.critic.elig[tuple(s)] = 1
 
                 # Going through each SAP in the current episode and updating values and policies
                 for s_curr, a_curr in episode_list:
 
                     # Critic updates current states value
-                    self.critic.state_values[s_curr] = (
+                    # IMPORTANT: s_curr is assumed to be a list and is therefore converted to tuple
+                    self.critic.state_values[tuple(s_curr)] = (
                         self.critic.get_state_value(s_curr) + self.critic.lr *
                         td_error * self.critic.get_elig_value(s_curr))
 
                     # Critic updates eligibility trace
-                    self.critic.elig[s_curr] = (
+                    # IMPORTANT: s_curr is assumed to be a list and is therefore converted to tuple
+                    self.critic.elig[tuple(s_curr)] = (
                         self.critic.disc_factor * self.critic.elig_decay *
                         self.critic.get_elig_value(s_curr))
 
                     # Actor updates policy
-                    self.actor.policy[(s_curr, a_curr)] = (
+                    # IMPORTANT: s_curr is assumed to be a list and is therefore converted to tuple
+                    self.actor.policy[(tuple(s_curr), a_curr)] = (
                         self.actor.get_policy(s_curr, a_curr) + self.actor.lr *
                         td_error * self.actor.get_elig_value(s_curr, a_curr))
 
                     # Actor updates eligibility trace
+                    # IMPORTANT: s_curr is assumed to be a list and is therefore converted to tuple
                     self.actor.elig[(
-                        s_curr, a_curr
+                        tuple(s_curr), a_curr
                     )] = self.actor.disc_factor * self.actor.elig_decay * self.actor.get_elig_value(
                         s_curr, a_curr)
 
@@ -113,17 +119,17 @@ class RLSystem():
 
 if __name__ == "__main__":
     pbsw = PoleBalancingSimWorld()
-    tohsw = TowersOfHanoiSimWorld()
-    gsw = GamblerSimWorld(0.4)
+    tohsw = TowersOfHanoiSimWorld(3, 4)
+    gsw = GamblerSimWorld(0.5)
 
-    rls = RLSystem(pbsw, 200, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
+    # rls = RLSystem(pbsw, 200, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
+    #                0.5, 0.05, False, 1)
+
+    rls = RLSystem(tohsw, 500, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
                    0.5, 0.05, False, 1)
 
-    # rls = RLSystem(tohsw, 500, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
-    #                0.5, 0.1, False, 1)
-
-    # rls = RLSystem(gsw, 25000, 300, False, 1, 0.05, 0.05, 0.5, 0.5, 1, 1, 0.9,
-    #                0.15, False, 1)
+    # rls = RLSystem(gsw, 25000, 300, False, 1, 0.05, 0.05, 0.5, 0.5, 1, 1, 0.5,
+    #                0.075, False, 1)
     rls.generic_actor_critic_algorithm()
     # wager = []
     # for i in range(1, 101):
@@ -131,7 +137,7 @@ if __name__ == "__main__":
     # plt.plot(wager)
     # plt.vlines(x=[12.5, 25, 37.5, 50, 62.5, 75, 87.5],
     #            ymin=[0, 0, 0, 0, 0, 0, 0],
-    #            ymax=[17.5, 30, 45, 50, 45, 30, 17.5],
+    #            ymax=[12.5, 25, 37.5, 50, 37.5, 25, 12.5],
     #            colors="red",
     #            linestyles="dotted")
     # plt.show()

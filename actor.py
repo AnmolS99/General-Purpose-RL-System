@@ -23,7 +23,8 @@ class Actor():
         Returns the policy
         """
         # If there is no policy for the pair (s, a), return 0
-        return self.policy.get((s, a), 0)
+        # IMPORTANT: s is assumed to be a list and is therefore converted to tuple
+        return self.policy.get((tuple(s), a), 0)
 
     def get_optimal_action(self, s, valid_actions):
         """
@@ -56,7 +57,8 @@ class Actor():
         Returns the eligibility trace value for a state and an action
         """
         # If no value is found for the elibility trace of the state-action pair, return 0
-        return self.elig.get((s, a), 0)
+        # IMPORTANT: s is assumed to be a list and is therefore converted to tuple
+        return self.elig.get((tuple(s), a), 0)
 
     def reset_elig(self):
         """

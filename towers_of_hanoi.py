@@ -28,7 +28,7 @@ class TowersOfHanoiSimWorld:
         # Restting steps taken
         self.steps_taken = 0
 
-        return tuple(self.discs_on_pegs)
+        return self.one_hot_encode(tuple(self.discs_on_pegs))
 
     def next_state(self, action):
         """
@@ -50,14 +50,13 @@ class TowersOfHanoiSimWorld:
         # Incrementing the steps taken
         self.steps_taken += 1
 
-        return tuple(
-            self.discs_on_pegs
-        ), reward  # OBS CONVERTING TO TUPLE MIGHT HAVE SOME SIDE EFFECTS
+        return self.one_hot_encode(tuple(self.discs_on_pegs)), reward
 
     def get_valid_actions(self, state):
         """
         Getting a list of valid actions in a given state
         """
+        state = self.rev_one_hot_encode(state)
         valid_actions = []
         # Checking the valid actions for each disc
         for disc in range(len(state)):
@@ -124,8 +123,42 @@ class TowersOfHanoiSimWorld:
         plt.title("Towers Of Hanoi (step number: " + str(step_nr) + ")")
         plt.show()
 
+    def one_hot_encode(self, state):
+        """
+        Function that turns state into one hot encoding
+        """
+        # Converting from tuple to np.array
+        state_list = np.array(list(state))
+
+        #Defining the shape
+        shape = (state_list.size, self.num_pegs)
+
+        # Creating the one hot encoding in form of matrix
+        one_hot_enc_state = np.zeros(shape)
+
+        # Getting a list of all row indices
+        rows = np.arange(state_list.size)
+
+        # Placing a 1 in the place given by the index in state
+        one_hot_enc_state[rows, state_list] = 1
+
+        return one_hot_enc_state.flatten()
+
+    def rev_one_hot_encode(self, state):
+        """
+        Reversing a one hot encoding
+        """
+        # Unflattening
+        state_matrix = np.split(state, self.num_discs)
+        rev_enc = np.argmax(state_matrix, axis=1)
+
+        return tuple(rev_enc)
+
 
 if __name__ == "__main__":
-    tohsw = TowersOfHanoiSimWorld(5, 6)
+    tohsw = TowersOfHanoiSimWorld(4, 3)
     s = tohsw.begin_episode()
-    print(tohsw.get_valid_actions(s))
+    enc = tohsw.one_hot_encode((0, 1, 2, 3))
+    print(enc)
+    rev_enc = tohsw.rev_one_hot_encode(enc)
+    print(rev_enc)
