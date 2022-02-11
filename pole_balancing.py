@@ -117,10 +117,9 @@ class PoleBalancingSimWorld:
         """
         Returns current state, but with rounded values so that the number of possible states stays relatively small
         """
-        # return np.round(self.x, 1), np.round(self.x_vel, 1), np.round(
-        #     self.theta, 1), np.round(self.theta_first_der, 1)
-        return np.sign(self.x), np.round(self.x_vel), np.sign(
-            self.theta), np.round(self.theta_first_der)
+        return self.one_hot_encode(
+            (np.sign(self.x), np.round(self.x_vel), np.sign(self.theta),
+             np.round(self.theta_first_der)))
 
     def get_valid_actions(self, state):
         """
@@ -141,7 +140,37 @@ class PoleBalancingSimWorld:
         return (not (self.theta_in_range() and self.x_in_range())
                 ) or self.steps_taken >= self.episode_len
 
+    def one_hot_encode(self, state):
+        """
+        One hot encoding 
+        """
+        # State is on the for (-1, -2, 1, 2)
+        one_hot_x = self.one_hot_encode_sign(state[0])
+        one_hot_x_vel = self.one_hot_encode_number(state[1])
+        one_hot_theta = self.one_hot_encode_sign(state[2])
+        one_hot_theta_first_der = self.one_hot_encode_number(state[3])
+        return np.concatenate(
+            (one_hot_x, one_hot_x_vel, one_hot_theta, one_hot_theta_first_der))
+
+    def one_hot_encode_sign(self, number):
+        if number == -1:
+            return np.array([1, 0, 0])
+        elif number == 0:
+            return np.array([0, 1, 0])
+        elif number == 1:
+            return np.array([0, 0, 1])
+
+    def one_hot_encode_number(self, number):
+        n = 3
+        one_hot_encoded_number = np.zeros((2 * n) + 1)
+        for i, val in enumerate(range(-n, n + 1)):
+            if number <= val:
+                one_hot_encoded_number[i] = 1
+                return one_hot_encoded_number
+        one_hot_encoded_number[2 * n] = 1
+        return one_hot_encoded_number
+
 
 if __name__ == "__main__":
     pbsw = PoleBalancingSimWorld()
-    print(pbsw.begin_episode())
+    print(pbsw.one_hot_encode((-1, -0.12, 1, 0.22)))

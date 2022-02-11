@@ -122,14 +122,14 @@ if __name__ == "__main__":
     tohsw = TowersOfHanoiSimWorld(3, 4)
     gsw = GamblerSimWorld(0.5)
 
-    rls = RLSystem(pbsw, 200, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
-                   0.5, 0.05, False, 1)
+    # rls = RLSystem(pbsw, 200, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
+    #                0.5, 0.05, False, 1)
 
     # rls = RLSystem(tohsw, 500, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
     #                0.5, 0.05, False, 1)
 
-    # rls = RLSystem(gsw, 25000, 300, False, 1, 0.05, 0.05, 0.5, 0.5, 1, 1, 0.5,
-    #                0.075, False, 1)
+    rls = RLSystem(gsw, 25000, 300, False, 1, 0.05, 0.05, 0.5, 0.5, 1, 1, 0.5,
+                   0.075, False, 1)
     rls.generic_actor_critic_algorithm()
     # wager = []
     # for s in range(1, 101):
