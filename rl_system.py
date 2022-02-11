@@ -122,18 +122,21 @@ if __name__ == "__main__":
     tohsw = TowersOfHanoiSimWorld(3, 4)
     gsw = GamblerSimWorld(0.5)
 
-    # rls = RLSystem(pbsw, 200, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
-    #                0.5, 0.05, False, 1)
-
-    rls = RLSystem(tohsw, 500, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
+    rls = RLSystem(pbsw, 200, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
                    0.5, 0.05, False, 1)
+
+    # rls = RLSystem(tohsw, 500, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
+    #                0.5, 0.05, False, 1)
 
     # rls = RLSystem(gsw, 25000, 300, False, 1, 0.05, 0.05, 0.5, 0.5, 1, 1, 0.5,
     #                0.075, False, 1)
     rls.generic_actor_critic_algorithm()
     # wager = []
-    # for i in range(1, 101):
-    #     wager.append(rls.actor.get_optimal_action(i, gsw.get_valid_actions(i)))
+    # for s in range(1, 101):
+    #     one_hot_s = gsw.one_hot_encode(s)
+    #     wager.append(
+    #         rls.actor.get_optimal_action(one_hot_s,
+    #                                      gsw.get_valid_actions(one_hot_s)))
     # plt.plot(wager)
     # plt.vlines(x=[12.5, 25, 37.5, 50, 62.5, 75, 87.5],
     #            ymin=[0, 0, 0, 0, 0, 0, 0],

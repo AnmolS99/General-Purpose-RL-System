@@ -17,7 +17,7 @@ class GamblerSimWorld:
         # Resetting the amounts of steps taken
         self.steps_taken = 0
 
-        return self.units
+        return self.one_hot_encode(self.units)
 
     def next_state(self, action):
         """
@@ -39,12 +39,13 @@ class GamblerSimWorld:
         # Incrementing the amount of steps taken
         self.steps_taken += 1
 
-        return self.units, reward
+        return self.one_hot_encode(self.units), reward
 
     def get_valid_actions(self, state):
         """
         Getting a list of units the gamble can gamble given the current state (units it has)
         """
+        state = self.rev_one_hot_encode(state)
         if state == 100 or state == 0:
             return [0]
         return [i for i in range(1, (min(state, 100 - state) + 1))]
@@ -66,9 +67,26 @@ class GamblerSimWorld:
     def show_best_history(self):
         return
 
+    def one_hot_encode(self, state):
+        """
+        One hot encoding state
+        """
+        one_hot_state = np.zeros(101)
+        one_hot_state[state] = 1
+        return one_hot_state
+
+    def rev_one_hot_encode(self, state):
+        """
+        Reversing a one hot encoding of state
+        """
+        return np.where(state == 1)[0][0]
+
 
 if __name__ == "__main__":
     gsw = GamblerSimWorld(0.5)
     gsw.begin_episode()
     gsw.next_state(10)
-    print(gsw.get_valid_actions(3))
+    a = gsw.one_hot_encode(33)
+    print(a)
+    b = gsw.rev_one_hot_encode(a)
+    print(b)
