@@ -1,12 +1,17 @@
 import numpy as np
 import random
+import tensorflow as tf
 
 
 class Critic():
 
     def __init__(self, use_nn, nn, lr, elig_decay, disc_factor) -> None:
         self.use_nn = use_nn
-        self.nn = nn
+
+        if self.use_nn:
+            self.nn = self.create_nn(nn)
+        else:
+            self.nn = None
         self.lr = lr  # Learning rate
         self.elig_decay = elig_decay  # Eligibility decay
         self.disc_factor = disc_factor  # Discount factor
@@ -16,6 +21,14 @@ class Critic():
 
         # Initializing e(s) as empty dictionary
         self.elig = {}
+
+    def create_nn(self, nn):
+        model = tf.keras.Sequential([
+            tf.keras.layers.Dense(16, activation="tanh"),
+            tf.keras.layers.Dense(16, activation="tanh"),
+            tf.keras.layers.Dense(1)
+        ])
+        return model
 
     def get_state_value(self, s):
         """
@@ -42,3 +55,9 @@ class Critic():
     def calculate_td_error(self, r, s, s_next):
         return r + self.disc_factor * self.get_state_value(
             s_next) - self.get_state_value(s)
+
+
+if __name__ == "__main__":
+    critic = Critic(True, 1, 0.5, 0.99)
+    states = np.random.uniform(size=(10, 9)) < 0.3
+    a = critic.nn(states[0])
