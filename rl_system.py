@@ -3,6 +3,7 @@ from critic import Critic
 from gambler import GamblerSimWorld
 from pole_balancing import PoleBalancingSimWorld
 from matplotlib import pyplot as plt
+import numpy as np
 
 from towers_of_hanoi import TowersOfHanoiSimWorld
 
@@ -10,7 +11,7 @@ from towers_of_hanoi import TowersOfHanoiSimWorld
 class RLSystem():
 
     def __init__(self, sim_world, num_episodes, max_steps, critic_use_nn,
-                 critic_nn, actor_lr, critic_lr, actor_elig_decay,
+                 critic_nn_specs, actor_lr, critic_lr, actor_elig_decay,
                  critic_elig_decay, actor_disc_factor, critic_disc_factor,
                  epsilon, epsilon_decay_rate, display, delay) -> None:
         self.sim_world = sim_world
@@ -19,7 +20,7 @@ class RLSystem():
         self.display = display
         self.delay = delay
 
-        self.critic = Critic(critic_use_nn, critic_nn, critic_lr,
+        self.critic = Critic(critic_use_nn, critic_nn_specs, critic_lr,
                              critic_elig_decay, critic_disc_factor)
         self.actor = Actor(actor_lr, actor_elig_decay, actor_disc_factor,
                            epsilon, epsilon_decay_rate)
@@ -35,6 +36,7 @@ class RLSystem():
             self.critic.reset_elig()
 
             # Decreasing epsilon for actor, since we want less exploration as number of episodes goes up
+            # Every time we have been through a percent of num_episodes, epsilon is decreased
             if i % (self.num_episodes // 100) == 0:
                 self.actor.epsilon *= (1 - self.actor.epsilon_decay_rate)
                 print(self.actor.epsilon)
@@ -46,8 +48,11 @@ class RLSystem():
             # Initializing a list of steps taken in the current episode on the form [(s_0, a_0), (s_1, a_1), ...]
             episode_list = []
 
+            # Initializing list of target values to the states in critic on the form [(s_0, V_star(s_0)), (s_1, V_star(s_1)), ...]
+            V_star_list = []
+
             # Repeating for each step of the episode
-            for j in range(self.max_steps):
+            for _ in range(self.max_steps):
 
                 # Adding the state s and action a we are in to the episode_list before taking the next step
                 episode_list.append((s, a))
@@ -63,27 +68,37 @@ class RLSystem():
                 # IMPORTANT: s is assumed to be a list and is therefore converted to tuple
                 self.actor.elig[(tuple(s), a)] = 1
 
+                if self.critic.use_nn:
+                    # Calculating V_star for s
+                    V_star_s = self.critic.calculate_v_star(r, s_next)
+
+                    # Adding V_star to the list
+                    V_star_list.append((s, V_star_s))
+
                 # Critic calculates TD-error
                 td_error = self.critic.calculate_td_error(r, s, s_next)
 
                 # Setting the eligibility trace in the critic to 1
                 # IMPORTANT: s is assumed to be a list and is therefore converted to tuple
-                self.critic.elig[tuple(s)] = 1
+                if not self.critic.use_nn:
+                    self.critic.elig[tuple(s)] = 1
 
                 # Going through each SAP in the current episode and updating values and policies
                 for s_curr, a_curr in episode_list:
 
-                    # Critic updates current states value
-                    # IMPORTANT: s_curr is assumed to be a list and is therefore converted to tuple
-                    self.critic.state_values[tuple(s_curr)] = (
-                        self.critic.get_state_value(s_curr) + self.critic.lr *
-                        td_error * self.critic.get_elig_value(s_curr))
+                    if not self.critic.use_nn:
+                        # Critic updates current states value
+                        # IMPORTANT: s_curr is assumed to be a list and is therefore converted to tuple
+                        self.critic.state_values[tuple(s_curr)] = (
+                            self.critic.get_state_value(s_curr) +
+                            self.critic.lr * td_error *
+                            self.critic.get_elig_value(s_curr))
 
-                    # Critic updates eligibility trace
-                    # IMPORTANT: s_curr is assumed to be a list and is therefore converted to tuple
-                    self.critic.elig[tuple(s_curr)] = (
-                        self.critic.disc_factor * self.critic.elig_decay *
-                        self.critic.get_elig_value(s_curr))
+                        # Critic updates eligibility trace
+                        # IMPORTANT: s_curr is assumed to be a list and is therefore converted to tuple
+                        self.critic.elig[tuple(s_curr)] = (
+                            self.critic.disc_factor * self.critic.elig_decay *
+                            self.critic.get_elig_value(s_curr))
 
                     # Actor updates policy
                     # IMPORTANT: s_curr is assumed to be a list and is therefore converted to tuple
@@ -107,6 +122,16 @@ class RLSystem():
                     self.sim_world.end_episode()
                     break
 
+            if self.critic.use_nn:
+                # Training V_theta on each case
+                states = [i[0] for i in V_star_list]
+                V_star_states = [i[1] for i in V_star_list]
+                s = np.array(V_star_states)
+                self.critic.nn.fit(np.array(states),
+                                   np.array(V_star_states),
+                                   verbose=0)
+
+            # Storing the number of steps taken in the current (finished) episode
             result_list.append(self.sim_world.steps_taken)
 
         # Plotting the result list
@@ -125,11 +150,14 @@ if __name__ == "__main__":
     # rls = RLSystem(pbsw, 200, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
     #                0.5, 0.05, False, 1)
 
-    # rls = RLSystem(tohsw, 500, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
-    #                0.5, 0.05, False, 1)
+    rls = RLSystem(pbsw, 200, 300, True, (20, 16, 16, 1), 0.3, 0.03, 0.5, 0.5,
+                   0.99, 0.99, 0.5, 0.05, False, 1)
 
-    rls = RLSystem(gsw, 25000, 300, False, 1, 0.05, 0.05, 0.5, 0.5, 1, 1, 0.5,
-                   0.075, False, 1)
+    # rls = RLSystem(tohsw, 500, 300, True, (12, 16, 16, 1), 0.3, 0.03, 0.5, 0.5,
+    #                0.99, 0.99, 0.5, 0.05, False, 1)
+
+    # rls = RLSystem(gsw, 25000, 300, False, 1, 0.05, 0.05, 0.5, 0.5, 1, 1, 0.5,
+    #                0.075, False, 1)
     rls.generic_actor_critic_algorithm()
     # wager = []
     # for s in range(1, 101):

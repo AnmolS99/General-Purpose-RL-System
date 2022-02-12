@@ -5,14 +5,16 @@ import tensorflow as tf
 
 class Critic():
 
-    def __init__(self, use_nn, nn, lr, elig_decay, disc_factor) -> None:
+    def __init__(self, use_nn, nn_specs, lr, elig_decay, disc_factor) -> None:
+        self.lr = lr  # Learning rate (needs to be declared first as it is used in creation of NN)
+
         self.use_nn = use_nn
 
         if self.use_nn:
-            self.nn = self.create_nn(nn)
+            self.nn = self.create_nn(nn_specs)
         else:
             self.nn = None
-        self.lr = lr  # Learning rate
+
         self.elig_decay = elig_decay  # Eligibility decay
         self.disc_factor = disc_factor  # Discount factor
 
@@ -22,12 +24,34 @@ class Critic():
         # Initializing e(s) as empty dictionary
         self.elig = {}
 
-    def create_nn(self, nn):
-        model = tf.keras.Sequential([
-            tf.keras.layers.Dense(16, activation="tanh"),
-            tf.keras.layers.Dense(16, activation="tanh"),
-            tf.keras.layers.Dense(1)
-        ])
+    def create_nn(self, nn_specs):
+        # Converting specs from tuple to list
+        nn_specs_list = list(nn_specs)
+
+        # Creating a list of layers
+        layers = []
+
+        # Adding input layer
+        input_neurons = nn_specs_list[0]
+        layers.append(tf.keras.layers.Input((input_neurons, )))
+
+        # Adding all hidden layers
+        for layer_neurons in nn_specs_list[1:-1]:
+            layers.append(
+                tf.keras.layers.Dense(layer_neurons, activation="tanh"))
+
+        # Adding output layer
+        output_neurons = nn_specs_list[-1]
+        layers.append(tf.keras.layers.Dense(output_neurons))
+
+        # Creating the neural network model
+        model = tf.keras.Sequential(layers)
+
+        # Selecting the optimizer
+        optimizer = tf.keras.optimizers.Adam(learning_rate=self.lr)
+
+        # Compiling the model
+        model.compile(optimizer, "mean_squared_error")
         return model
 
     def get_state_value(self, s):
@@ -48,16 +72,45 @@ class Critic():
 
     def reset_elig(self):
         """
-        Resetting eligibilities by setting it to an empty dictionary
+        Resetting eligibilities by setting it to an empty dictionary, only if critic is table-based
         """
-        self.elig = {}
+        if not self.use_nn:
+            self.elig = {}
 
     def calculate_td_error(self, r, s, s_next):
-        return r + self.disc_factor * self.get_state_value(
-            s_next) - self.get_state_value(s)
+        """
+        Calculating the TD-error
+        """
+        if self.use_nn:
+            return self.calculate_v_star(r, s_next) - self.calculate_v_theta(s)
+        else:
+            return r + self.disc_factor * self.get_state_value(
+                s_next) - self.get_state_value(s)
+
+    def calculate_v_star(self, r, s_next):
+        """
+        Calculating V_star of state s (which is not included in calculations), using s_next
+        """
+        return r + self.disc_factor * self.calculate_v_theta(s_next)
+
+    def calculate_v_theta(self, s):
+        """
+        Using NN model to predict value of state s
+        """
+        # tensor = self.nn(s[None])
+        # tensor_value = tf.get_static_value(tensor)[0][0]
+        return self.nn(s[None])
 
 
 if __name__ == "__main__":
-    critic = Critic(True, 1, 0.5, 0.99)
+    critic = Critic(True, (9, 16, 16, 1), 0.5, 0.5, 0.99)
     states = np.random.uniform(size=(10, 9)) < 0.3
-    a = critic.nn(states[0])
+    # for state in states:
+    #     t = critic.nn(state[None])
+    #     print(t)
+    #     print(tf.get_static_value(t))
+    #     print()
+    state = np.array([1, 0, 1, 0, 1, 0, 1, 1, 0])
+    state_None = state[None]
+    t = critic.nn(state[None])
+    print(tf.get_static_value(t[0][0]))
