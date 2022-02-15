@@ -1,11 +1,9 @@
 from actor import Actor
 from critic import Critic
-from gambler import GamblerSimWorld
-from pole_balancing import PoleBalancingSimWorld
 from matplotlib import pyplot as plt
 import numpy as np
-
-from towers_of_hanoi import TowersOfHanoiSimWorld
+import tensorflow as tf
+import random
 
 
 class RLSystem():
@@ -39,7 +37,6 @@ class RLSystem():
             # Every time we have been through a percent of num_episodes, epsilon is decreased
             if i % (self.num_episodes // 100) == 0:
                 self.actor.epsilon *= (1 - self.actor.epsilon_decay_rate)
-                print(self.actor.epsilon)
 
             # Initializing state and action
             s = self.sim_world.begin_episode()
@@ -65,7 +62,6 @@ class RLSystem():
                     s_next, self.sim_world.get_valid_actions(s_next))
 
                 # Setting the eligibility trace in the actor to 1
-                # IMPORTANT: s is assumed to be a list and is therefore converted to tuple
                 self.actor.elig[(tuple(s), a)] = 1
 
                 if self.critic.use_nn:
@@ -79,7 +75,6 @@ class RLSystem():
                 td_error = self.critic.calculate_td_error(r, s, s_next)
 
                 # Setting the eligibility trace in the critic to 1
-                # IMPORTANT: s is assumed to be a list and is therefore converted to tuple
                 if not self.critic.use_nn:
                     self.critic.elig[tuple(s)] = 1
 
@@ -88,26 +83,22 @@ class RLSystem():
 
                     if not self.critic.use_nn:
                         # Critic updates current states value
-                        # IMPORTANT: s_curr is assumed to be a list and is therefore converted to tuple
                         self.critic.state_values[tuple(s_curr)] = (
                             self.critic.get_state_value(s_curr) +
                             self.critic.lr * td_error *
                             self.critic.get_elig_value(s_curr))
 
                         # Critic updates eligibility trace
-                        # IMPORTANT: s_curr is assumed to be a list and is therefore converted to tuple
                         self.critic.elig[tuple(s_curr)] = (
                             self.critic.disc_factor * self.critic.elig_decay *
                             self.critic.get_elig_value(s_curr))
 
                     # Actor updates policy
-                    # IMPORTANT: s_curr is assumed to be a list and is therefore converted to tuple
                     self.actor.policy[(tuple(s_curr), a_curr)] = (
                         self.actor.get_policy(s_curr, a_curr) + self.actor.lr *
                         td_error * self.actor.get_elig_value(s_curr, a_curr))
 
                     # Actor updates eligibility trace
-                    # IMPORTANT: s_curr is assumed to be a list and is therefore converted to tuple
                     self.actor.elig[(
                         tuple(s_curr), a_curr
                     )] = self.actor.disc_factor * self.actor.elig_decay * self.actor.get_elig_value(
@@ -136,39 +127,9 @@ class RLSystem():
 
         # Plotting the result list
         plt.plot(result_list)
+        plt.xlabel("Episode")
+        plt.ylabel("Timestep")
         plt.show()
 
         # Showing the history of the best episode
         self.sim_world.show_best_history()
-
-
-if __name__ == "__main__":
-    pbsw = PoleBalancingSimWorld()
-    tohsw = TowersOfHanoiSimWorld(3, 4)
-    gsw = GamblerSimWorld(0.5)
-
-    # rls = RLSystem(pbsw, 200, 300, False, 1, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
-    #                0.5, 0.05, False, 1)
-
-    rls = RLSystem(pbsw, 200, 300, True, (20, 16, 16, 1), 0.3, 0.03, 0.5, 0.5,
-                   0.99, 0.99, 0.5, 0.05, False, 1)
-
-    # rls = RLSystem(tohsw, 500, 300, True, (12, 16, 16, 1), 0.3, 0.03, 0.5, 0.5,
-    #                0.99, 0.99, 0.5, 0.05, False, 1)
-
-    # rls = RLSystem(gsw, 25000, 300, False, 1, 0.05, 0.05, 0.5, 0.5, 1, 1, 0.5,
-    #                0.075, False, 1)
-    rls.generic_actor_critic_algorithm()
-    # wager = []
-    # for s in range(1, 101):
-    #     one_hot_s = gsw.one_hot_encode(s)
-    #     wager.append(
-    #         rls.actor.get_optimal_action(one_hot_s,
-    #                                      gsw.get_valid_actions(one_hot_s)))
-    # plt.plot(wager)
-    # plt.vlines(x=[12.5, 25, 37.5, 50, 62.5, 75, 87.5],
-    #            ymin=[0, 0, 0, 0, 0, 0, 0],
-    #            ymax=[12.5, 25, 37.5, 50, 37.5, 25, 12.5],
-    #            colors="red",
-    #            linestyles="dotted")
-    # plt.show()

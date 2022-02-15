@@ -6,6 +6,7 @@ import tensorflow as tf
 class Critic():
 
     def __init__(self, use_nn, nn_specs, lr, elig_decay, disc_factor) -> None:
+
         self.lr = lr  # Learning rate (needs to be declared first as it is used in creation of NN)
 
         self.use_nn = use_nn

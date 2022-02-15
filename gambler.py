@@ -28,13 +28,13 @@ class GamblerSimWorld:
         # Performing the gamble
         if random.random() <= self.p_w:
             self.units += action
-            #reward = action
+            reward = action
         else:
             self.units -= action
-            #reward = -action
+            reward = -action
 
         if self.units == 100:
-            reward = 1
+            reward += 1
 
         # Incrementing the amount of steps taken
         self.steps_taken += 1

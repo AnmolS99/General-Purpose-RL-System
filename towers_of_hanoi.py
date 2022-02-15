@@ -101,7 +101,6 @@ class TowersOfHanoiSimWorld:
     def show_best_history(self):
         step_nr = 0
         for step in self.best_episode_history:
-            print(step)
             self.show_state(step, step_nr)
             step_nr += 1
 
@@ -121,7 +120,9 @@ class TowersOfHanoiSimWorld:
             heights[state[i]] += r
             axes.add_artist(circle)
         plt.title("Towers Of Hanoi (step number: " + str(step_nr) + ")")
-        plt.show()
+        plt.show(block=False)
+        plt.pause(1)
+        plt.close()
 
     def one_hot_encode(self, state):
         """

@@ -111,6 +111,8 @@ class PoleBalancingSimWorld:
         timesteps = [i[0] for i in self.best_episode_history]
         thetas = [i[1] for i in self.best_episode_history]
         plt.plot(timesteps, thetas)
+        plt.xlabel("Timestep")
+        plt.ylabel("Angle (Radiands)")
         plt.show()
 
     def get_current_state(self):
