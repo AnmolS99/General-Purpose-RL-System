@@ -1,15 +1,13 @@
-import matplotlib.pyplot as plt
-import numpy as np
+import cProfile, pstats, io
+from pstats import SortKey
+from main import run
 
-x = 1
-
-l = []
-
-num_episodes = 25000
-for i in range(1, num_episodes):
-    if i % (num_episodes // 100) == 0:
-        x = x * 0.95
-    l.append(x)
-
-plt.plot(l)
-plt.show()
+pr = cProfile.Profile()
+pr.enable()
+run()
+pr.disable()
+s = io.StringIO()
+sortby = SortKey.CUMULATIVE
+ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+ps.print_stats()
+print(s.getvalue())

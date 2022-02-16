@@ -54,7 +54,6 @@ class RLSystem():
 
             # Repeating for each step of the episode
             for _ in range(self.max_steps):
-
                 # Adding the state s and action a we are in to the episode_list before taking the next step
                 episode_list.append((s, a))
 
