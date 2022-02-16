@@ -6,6 +6,7 @@ from towers_of_hanoi import TowersOfHanoiSimWorld
 import random
 import numpy as np
 import tensorflow as tf
+from time import time
 
 
 def show_optimal_state_action_gambler(gsw, rls):
@@ -26,7 +27,7 @@ def show_optimal_state_action_gambler(gsw, rls):
 
 if __name__ == "__main__":
 
-    # Setting random seeds
+    # Setting random seeds to be able to reproduce results
     seed = 1001
     random.seed(seed)
     np.random.seed(seed)
@@ -34,37 +35,34 @@ if __name__ == "__main__":
 
     pbsw = PoleBalancingSimWorld()
     num_pegs = 3
-    num_discs = 4
+    num_discs = 3
     tohsw = TowersOfHanoiSimWorld(num_pegs, num_discs)
     gsw = GamblerSimWorld(0.4)
 
     # Pole balancing with table-based critic
-    rls_pbsw_tab = RLSystem(pbsw, 200, 300, False, None, 0.3, 0.3, 0.5, 0.5,
-                            0.99, 0.99, 0.5, 0.04, False, 1)
+    # rls = RLSystem(pbsw, 200, 300, False, None, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
+    #                0.5, 0.04, False, 1)
 
     # Pole balancing with ANN-based critic
-    rls_pbsw_ann = RLSystem(pbsw, 200, 300, True, (20, 16, 16, 1), 0.3, 0.3,
-                            0.5, 0.5, 0.99, 0.99, 0.5, 0.05, False, 1)
+    # rls = RLSystem(pbsw, 100, 300, True, (20, 16, 16, 1), 0.3, 0.3, 0.5, 0.5,
+    #                0.99, 0.99, 0.5, 0.1, False, 1)
 
     # Towers of Hanoi with table-based critic
-    rls_tohsw_tab = RLSystem(tohsw, 300, 300, False, None, 0.3, 0.03, 0.5, 0.5,
-                             0.99, 0.99, 0.9, 0.05, False, 1)
+    # rls = RLSystem(tohsw, 300, 300, False, None, 0.3, 0.03, 0.5, 0.5, 0.99,
+    #                0.99, 0.9, 0.05, False, 1)
 
     # Towers of Hanoi with ANN-based critic
-    rls_tohsw_ann = RLSystem(tohsw, 300, 300, True,
-                             (num_pegs * num_discs, 16, 16, 1), 0.3, 0.03, 0.5,
-                             0.5, 0.99, 0.99, 0.9, 0.05, False, 1)
+    # rls = RLSystem(tohsw, 300, 300, True, (num_pegs * num_discs, 16, 16, 1),
+    #                0.2, 0.01, 0.5, 0.5, 0.99, 0.99, 0.9, 0.03, False, 1)
 
     # The Gambler with table-based critic
-    rls_gsw_tab = RLSystem(gsw, 25000, 300, False, None, 0.5, 0.05, 0.5, 0.5,
-                           1, 1, 0.9, 0.075, False, 1)
+    # rls = RLSystem(gsw, 25000, 300, False, None, 0.5, 0.05, 0.5, 0.5, 1, 1,
+    #                0.9, 0.075, False, 1)
 
     # The Gambler with ANN-based critic
-    rls_gsw_ann = RLSystem(gsw, 1000, 300, True, (101, 16, 16, 1), 0.1, 0.05,
-                           0.5, 0.5, 1, 1, 0.9, 0.075, False, 1)
-
-    rls = rls_tohsw_ann
+    # rls = RLSystem(gsw, 1000, 300, True, (101, 16, 16, 1), 0.1, 0.05, 0.5, 0.5,
+    #                1, 1, 0.9, 0.075, False, 1)
     rls.generic_actor_critic_algorithm()
 
-    if rls == rls_gsw_tab or rls == rls_gsw_ann:
+    if rls.sim_world == gsw:
         show_optimal_state_action_gambler(gsw, rls)

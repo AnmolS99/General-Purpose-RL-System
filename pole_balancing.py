@@ -103,7 +103,7 @@ class PoleBalancingSimWorld:
         if len(self.history) > len(self.best_episode_history):
             self.best_episode_history = self.history
 
-    def show_best_history(self):
+    def show_best_history(self, delay):
         """
         Showing the history of the best episode
         """
@@ -146,7 +146,6 @@ class PoleBalancingSimWorld:
         """
         One hot encoding 
         """
-        # State is on the for (-1, -2, 1, 2)
         one_hot_x = self.one_hot_encode_sign(state[0])
         one_hot_x_vel = self.one_hot_encode_number(state[1])
         one_hot_theta = self.one_hot_encode_sign(state[2])
@@ -155,24 +154,33 @@ class PoleBalancingSimWorld:
             (one_hot_x, one_hot_x_vel, one_hot_theta, one_hot_theta_first_der))
 
     def one_hot_encode_sign(self, number):
-        if number == -1:
-            return np.array([1, 0, 0])
-        elif number == 0:
-            return np.array([0, 1, 0])
-        elif number == 1:
-            return np.array([0, 0, 1])
+        """
+        One hot encoding sign numbers (and 0)
+        """
+        one_hot = np.zeros(3)
+        one_hot[int(number) + 1] = 1
+        return one_hot
 
     def one_hot_encode_number(self, number):
         n = 3
-        one_hot_encoded_number = np.zeros((2 * n) + 1)
-        for i, val in enumerate(range(-n, n + 1)):
-            if number <= val:
-                one_hot_encoded_number[i] = 1
-                return one_hot_encoded_number
-        one_hot_encoded_number[2 * n] = 1
-        return one_hot_encoded_number
+        one_hot = np.zeros((2 * n) + 1)
+        if number >= -(n - 1) and number <= (n - 1):
+            one_hot[int(number) + n] = 1
+        elif number < -(n - 1):
+            one_hot[0] = 1
+        else:
+            one_hot[-1] = 1
+        return one_hot
+
+        # one_hot_encoded_number = np.zeros((2 * n) + 1)
+        # for i, val in enumerate(range(-n, n + 1)):
+        #     if number <= val:
+        #         one_hot_encoded_number[i] = 1
+        #         return one_hot_encoded_number
+        # one_hot_encoded_number[2 * n] = 1
+        # return one_hot_encoded_number
 
 
 if __name__ == "__main__":
     pbsw = PoleBalancingSimWorld()
-    print(pbsw.one_hot_encode((-1, -0.12, 1, 0.22)))
+    print(pbsw.one_hot_encode_number(-1.0))

@@ -101,17 +101,3 @@ class Critic():
         # tensor = self.nn(s[None])
         # tensor_value = tf.get_static_value(tensor)[0][0]
         return self.nn(s[None])
-
-
-if __name__ == "__main__":
-    critic = Critic(True, (9, 16, 16, 1), 0.5, 0.5, 0.99)
-    states = np.random.uniform(size=(10, 9)) < 0.3
-    # for state in states:
-    #     t = critic.nn(state[None])
-    #     print(t)
-    #     print(tf.get_static_value(t))
-    #     print()
-    state = np.array([1, 0, 1, 0, 1, 0, 1, 1, 0])
-    state_None = state[None]
-    t = critic.nn(state[None])
-    print(tf.get_static_value(t[0][0]))

@@ -98,13 +98,13 @@ class TowersOfHanoiSimWorld:
                 self.best_episode_history) or not self.best_episode_history:
             self.best_episode_history = self.history
 
-    def show_best_history(self):
+    def show_best_history(self, delay):
         step_nr = 0
         for step in self.best_episode_history:
-            self.show_state(step, step_nr)
+            self.show_state(step, step_nr, delay)
             step_nr += 1
 
-    def show_state(self, state, step_nr):
+    def show_state(self, state, step_nr, delay):
         colors = ["red", "blue", "green", "yellow", "orange", "purple"]
         figure, axes = plt.subplots()
         heights = [0] * self.num_pegs
@@ -121,7 +121,7 @@ class TowersOfHanoiSimWorld:
             axes.add_artist(circle)
         plt.title("Towers Of Hanoi (step number: " + str(step_nr) + ")")
         plt.show(block=False)
-        plt.pause(1)
+        plt.pause(delay)
         plt.close()
 
     def one_hot_encode(self, state):

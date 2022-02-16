@@ -64,7 +64,7 @@ class GamblerSimWorld:
     def end_episode(self):
         return
 
-    def show_best_history(self):
+    def show_best_history(self, delay):
         return
 
     def one_hot_encode(self, state):
@@ -80,13 +80,3 @@ class GamblerSimWorld:
         Reversing a one hot encoding of state
         """
         return np.where(state == 1)[0][0]
-
-
-if __name__ == "__main__":
-    gsw = GamblerSimWorld(0.5)
-    gsw.begin_episode()
-    gsw.next_state(10)
-    a = gsw.one_hot_encode(33)
-    print(a)
-    b = gsw.rev_one_hot_encode(a)
-    print(b)

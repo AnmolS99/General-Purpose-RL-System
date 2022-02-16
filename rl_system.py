@@ -2,8 +2,7 @@ from actor import Actor
 from critic import Critic
 from matplotlib import pyplot as plt
 import numpy as np
-import tensorflow as tf
-import random
+from time import time
 
 
 class RLSystem():
@@ -132,4 +131,4 @@ class RLSystem():
         plt.show()
 
         # Showing the history of the best episode
-        self.sim_world.show_best_history()
+        self.sim_world.show_best_history(self.delay)
