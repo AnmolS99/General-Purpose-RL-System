@@ -2,10 +2,12 @@ from actor import Actor
 from critic import Critic
 from matplotlib import pyplot as plt
 import numpy as np
-from time import time
 
 
 class RLSystem():
+    """
+    The reinforcement learning system, consisting of an actor and a critic
+    """
 
     def __init__(self, sim_world, num_episodes, max_steps, critic_use_nn,
                  critic_nn_specs, actor_lr, critic_lr, actor_elig_decay,
@@ -23,6 +25,9 @@ class RLSystem():
                            epsilon, epsilon_decay_rate)
 
     def generic_actor_critic_algorithm(self):
+        """
+        The generic actor-critic algorithm
+        """
         result_list = []
 
         # Repeating for each episode
@@ -130,5 +135,6 @@ class RLSystem():
         plt.ylabel("Timestep")
         plt.show()
 
-        # Showing the history of the best episode
-        self.sim_world.show_best_history(self.delay)
+        if self.display:
+            # Showing the history of the best episode
+            self.sim_world.show_best_history(self.delay)

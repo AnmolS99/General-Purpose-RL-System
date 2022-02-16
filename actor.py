@@ -1,8 +1,10 @@
 import random
-import numpy as np
 
 
 class Actor():
+    """
+    The Actor class
+    """
 
     def __init__(self, lr, elig_decay, disc_factor, epsilon,
                  epsilon_decay_rate) -> None:
@@ -37,6 +39,7 @@ class Actor():
 
             policy_score = self.get_policy(s, action)
 
+            # If this action has a higher score than the current optimal one
             if optimal_score == None or policy_score > optimal_score:
                 optimal_action = action
                 optimal_score = policy_score
@@ -47,6 +50,7 @@ class Actor():
         """
         Returns an action, with a probability of choosing a random action instead of the optimal one
         """
+        # Having a probability of epsilon of choosing random action
         if random.random() <= self.epsilon:
             return random.choice(valid_actions)
         else:

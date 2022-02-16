@@ -1,9 +1,11 @@
 import random
-import re
 import numpy as np
 
 
 class GamblerSimWorld:
+    """
+    Gambler simulation world
+    """
 
     def __init__(self, p_w) -> None:
         self.p_w = p_w  # The win probability
@@ -11,6 +13,9 @@ class GamblerSimWorld:
         self.steps_taken = None  # The amount of gambles done
 
     def begin_episode(self):
+        """
+        Starting an episode
+        """
         # Randomly choosing a number of monetary units between 1 and 99
         self.units = np.random.randint(1, 100)
 
@@ -25,7 +30,7 @@ class GamblerSimWorld:
         winning that amount or losing it
         """
         reward = 0
-        # Performing the gamble
+        # Performing the gamble and getting reward
         if random.random() <= self.p_w:
             self.units += action
             reward = action
@@ -33,6 +38,7 @@ class GamblerSimWorld:
             self.units -= action
             reward = -action
 
+        # If we reach the goal we get an extra award
         if self.units == 100:
             reward += 1
 
@@ -43,7 +49,7 @@ class GamblerSimWorld:
 
     def get_valid_actions(self, state):
         """
-        Getting a list of units the gamble can gamble given the current state (units it has)
+        Getting a list of units the gambler can gamble given the current state (units it has)
         """
         state = self.rev_one_hot_encode(state)
         if state == 100 or state == 0:
@@ -62,9 +68,15 @@ class GamblerSimWorld:
         return False
 
     def end_episode(self):
+        """
+        Ending an episode
+        """
         return
 
     def show_best_history(self, delay):
+        """
+        Showing the best history
+        """
         return
 
     def one_hot_encode(self, state):

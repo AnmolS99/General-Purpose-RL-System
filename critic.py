@@ -1,9 +1,11 @@
-import numpy as np
 import random
 import tensorflow as tf
 
 
 class Critic():
+    """
+    The Critic class
+    """
 
     def __init__(self, use_nn, nn_specs, lr, elig_decay, disc_factor) -> None:
 
@@ -26,6 +28,9 @@ class Critic():
         self.elig = {}
 
     def create_nn(self, nn_specs):
+        """
+        Creating a neural network according to the specifications
+        """
         # Converting specs from tuple to list
         nn_specs_list = list(nn_specs)
 
@@ -48,10 +53,10 @@ class Critic():
         # Creating the neural network model
         model = tf.keras.Sequential(layers)
 
-        # Selecting the optimizer
+        # Selecting the optimizer (Adam seems to be the best with adaptive learning rate)
         optimizer = tf.keras.optimizers.Adam(learning_rate=self.lr)
 
-        # Compiling the model
+        # Compiling the model with MSE loss function
         model.compile(optimizer, "mean_squared_error")
         return model
 
@@ -98,6 +103,4 @@ class Critic():
         """
         Using NN model to predict value of state s
         """
-        # tensor = self.nn(s[None])
-        # tensor_value = tf.get_static_value(tensor)[0][0]
         return self.nn(s[None])

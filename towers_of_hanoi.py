@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 
 
 class TowersOfHanoiSimWorld:
+    """
+    Tower of Hanoi simulation world
+    """
 
     def __init__(self, num_pegs=3, num_discs=3) -> None:
         self.num_pegs = num_pegs
@@ -99,12 +102,18 @@ class TowersOfHanoiSimWorld:
             self.best_episode_history = self.history
 
     def show_best_history(self, delay):
+        """
+        Showing the best history
+        """
         step_nr = 0
         for step in self.best_episode_history:
             self.show_state(step, step_nr, delay)
             step_nr += 1
 
     def show_state(self, state, step_nr, delay):
+        """
+        Displaying a state 
+        """
         colors = ["red", "blue", "green", "yellow", "orange", "purple"]
         figure, axes = plt.subplots()
         heights = [0] * self.num_pegs
@@ -154,12 +163,3 @@ class TowersOfHanoiSimWorld:
         rev_enc = np.argmax(state_matrix, axis=1)
 
         return tuple(rev_enc)
-
-
-if __name__ == "__main__":
-    tohsw = TowersOfHanoiSimWorld(4, 3)
-    s = tohsw.begin_episode()
-    enc = tohsw.one_hot_encode((0, 1, 2, 3))
-    print(enc)
-    rev_enc = tohsw.rev_one_hot_encode(enc)
-    print(rev_enc)

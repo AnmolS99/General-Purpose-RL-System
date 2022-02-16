@@ -3,6 +3,9 @@ from matplotlib import pyplot as plt
 
 
 class PoleBalancingSimWorld:
+    """
+    Pole Balancing simulation world
+    """
 
     def __init__(self, l=0.5, m_p=0.1, g=-9.8, timestep=0.02) -> None:
 
@@ -29,6 +32,9 @@ class PoleBalancingSimWorld:
         self.best_episode_history = []
 
     def begin_episode(self):
+        """
+        Starting an episode
+        """
         # Centering the cart at the horizontal position
         self.x = (self.x_minus + self.x_plus) / 2
 
@@ -50,6 +56,9 @@ class PoleBalancingSimWorld:
         return self.get_current_state()
 
     def next_state(self, action):
+        """
+        Performing an action and going to the next state
+        """
 
         if action == "left":
             self.b = -self.f
@@ -107,12 +116,12 @@ class PoleBalancingSimWorld:
         """
         Showing the history of the best episode
         """
-        # Plotting the history (angle of the pole) of the bestepisode
+        # Plotting the history (angle of the pole) of the best episode
         timesteps = [i[0] for i in self.best_episode_history]
         thetas = [i[1] for i in self.best_episode_history]
         plt.plot(timesteps, thetas)
         plt.xlabel("Timestep")
-        plt.ylabel("Angle (Radiands)")
+        plt.ylabel("Angle (Radians)")
         plt.show()
 
     def get_current_state(self):
@@ -130,9 +139,15 @@ class PoleBalancingSimWorld:
         return ["left", "right"]
 
     def theta_in_range(self):
+        """
+        Checking if theta (the angle) is in the valid range
+        """
         return abs(self.theta) <= self.theta_m
 
     def x_in_range(self):
+        """
+        Checking if the cart is in the horizontal range
+        """
         return self.x > self.x_minus and self.x < self.x_plus
 
     def is_end_state(self):
@@ -144,7 +159,7 @@ class PoleBalancingSimWorld:
 
     def one_hot_encode(self, state):
         """
-        One hot encoding 
+        One hot encoding
         """
         one_hot_x = self.one_hot_encode_sign(state[0])
         one_hot_x_vel = self.one_hot_encode_number(state[1])
@@ -162,6 +177,9 @@ class PoleBalancingSimWorld:
         return one_hot
 
     def one_hot_encode_number(self, number):
+        """
+        One hot encoding numbers
+        """
         n = 3
         one_hot = np.zeros((2 * n) + 1)
         if number >= -(n - 1) and number <= (n - 1):
@@ -171,16 +189,3 @@ class PoleBalancingSimWorld:
         else:
             one_hot[-1] = 1
         return one_hot
-
-        # one_hot_encoded_number = np.zeros((2 * n) + 1)
-        # for i, val in enumerate(range(-n, n + 1)):
-        #     if number <= val:
-        #         one_hot_encoded_number[i] = 1
-        #         return one_hot_encoded_number
-        # one_hot_encoded_number[2 * n] = 1
-        # return one_hot_encoded_number
-
-
-if __name__ == "__main__":
-    pbsw = PoleBalancingSimWorld()
-    print(pbsw.one_hot_encode_number(-1.0))
