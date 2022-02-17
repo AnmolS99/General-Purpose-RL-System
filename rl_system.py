@@ -39,7 +39,10 @@ class RLSystem():
 
             # Decreasing epsilon for actor, since we want less exploration as number of episodes goes up
             # Every time we have been through a percent of num_episodes, epsilon is decreased
-            if i % (self.num_episodes // 100) == 0:
+            if self.num_episodes >= 100:
+                if i % (self.num_episodes // 100) == 0:
+                    self.actor.epsilon *= (1 - self.actor.epsilon_decay_rate)
+            else:
                 self.actor.epsilon *= (1 - self.actor.epsilon_decay_rate)
 
             # Initializing state and action
