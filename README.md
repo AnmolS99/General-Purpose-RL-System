@@ -25,7 +25,27 @@ or right of the cart), the controller affects the cart’s horizontal motion, wh
 angle (θ). The goal is to keep the pole balanced for a target number of timesteps (e.g. 300): the absolute
 value of the pole’s vertical angle stays within a tight, pre-defined range (e.g. [-.21, .21] radians).
 
+<img src="images/pole_balancing.png" alt="drawing" width="600"/>
 
+#### Results
 
+The following plot shows the number of steps during each episode of a run of the generic actor-critic algorithm on the pole balancing sim world with 200 episodes and 300 max-steps and a table-based critic:
+
+<img src="images/pbsw_table_num_steps.png" alt="drawing" width="500"/>
+
+As seen in the plot, the number of steps in the beginning of the run is low, meaning that the actor fails to balance the pole after a few steps. However after some episodes (and learning) it consistently manages to balance the pole for 300 steps! The plot below shows the angle of the pole during a successful run.
+
+<img src="images/pbsw_table_best_run.png" alt="drawing" width="500"/>
+
+### Towers of Hanoi
+
+This problem begins with all discs stacked on a single peg with the larger discs
+on the bottom, smaller discs on the top, and no pair of adjacent discs where a larger disc sits atop a disc
+smaller than itself. The goal is then to move the entire disc pyramid to a different peg, but only one disc at
+a time. On any given move, only the top disc of a peg can move, and only to a peg that is empty or where
+it will be smaller than the top disc currently on that peg. Optimal solutions involve the fewest number of
+moves. For example, the 3-peg, 4-disc problem requires a minimum of 15 moves.
+
+#### Results
 
 ![Tower of Hanoi](/images/tohsw.gif)
