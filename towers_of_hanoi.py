@@ -129,6 +129,7 @@ class TowersOfHanoiSimWorld:
             heights[state[i]] += r
             axes.add_artist(circle)
         plt.title("Towers Of Hanoi (step number: " + str(step_nr) + ")")
+        plt.savefig(f"images/tohsw_step_{step_nr}.png")
         plt.show(block=False)
         plt.pause(delay)
         plt.close()
