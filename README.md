@@ -33,19 +33,29 @@ The following plot shows the number of steps during each episode of a run of the
 
 <img src="images/pbsw_table_num_steps.png" alt="drawing" width="500"/>
 
-As seen in the plot, the number of steps in the beginning of the run is low, meaning that the actor fails to balance the pole after a few steps. However after some episodes (and learning) it consistently manages to balance the pole for 300 steps! The plot below shows the angle of the pole during a successful run.
+As seen in the plot, the number of steps in the beginning of the run is low, meaning that the actor fails to balance the pole after a few steps. However after some episodes (and learning) it consistently manages to balance the pole for 300 steps! The plot below shows the angle of the pole during a successful run:
 
 <img src="images/pbsw_table_best_run.png" alt="drawing" width="500"/>
 
 ### Towers of Hanoi
 
-This problem begins with all discs stacked on a single peg with the larger discs
-on the bottom, smaller discs on the top, and no pair of adjacent discs where a larger disc sits atop a disc
-smaller than itself. The goal is then to move the entire disc pyramid to a different peg, but only one disc at
-a time. On any given move, only the top disc of a peg can move, and only to a peg that is empty or where
-it will be smaller than the top disc currently on that peg. Optimal solutions involve the fewest number of
-moves. For example, the 3-peg, 4-disc problem requires a minimum of 15 moves.
+This problem begins with all discs stacked on a single peg with the larger discs on the bottom, smaller discs on the top, and no pair of adjacent discs where a larger disc sits atop a disc smaller than itself. The goal is then to move the entire disc pyramid to a different peg, but only one disc at a time. On any given move, only the top disc of a peg can move, and only to a peg that is empty or where it will be smaller than the top disc currently on that peg. Optimal solutions involve the fewest number of moves. For example, the 3-peg, 4-disc problem requires a minimum of 15 moves.
 
 #### Results
 
+The following plot shows the number of steps during each episode of a run of the generic actor-critic algorithm on the Towers of Hanoi sim world with 3 pegs and 4 discs, and a table-based critic:
+
+<img src="images/tohsw_num_steps.png" alt="drawing" width="500"/>
+
+As seen in the plot, the number of steps in the beginning of the run is high, meaning that the actor uses a lot of steps to solve the problem. However after some episodes (and learning) it consistently manages to solve the puzzle in around 15 steps (which is the optimal solution)! The GIF below shows how the agent solves the problem with 15 moves:
+
 ![Tower of Hanoi](/images/tohsw.gif)
+
+### The Gambler
+
+This resembles a random-walk but with variable step lengths dictated by explicit control decisions (i.e. wagers) performed by the gambling agent. Each of the gambler’s episodes begins with a randomly-chosen number of monetary units between 1 and 99. On each move, the agent bets U units on the toss of a biased coin (with a win probability of pw). If the agent wins the toss, it gains U units: otherwise it loses them. The gambler’s goal is to reach 100 units, a victory, while dropping to 0 units constitutes failure. On each move, the gambler can bet no more units than it has and no more units than needed to reach 100. For example, if sitting at either 3 or 97, the gambler’s maximum bet is the same: three. In all states, the minimum bet is one.
+
+#### Results
+
+<img src="images/gsw_strategy.png" alt="drawing" width="500"/>
+
