@@ -68,11 +68,11 @@ def main(sim_world, is_critic_ann):
 
 
 if __name__ == "__main__":
-    # sim_world = str(sys.argv[1]).lower()
-    # if (len(sys.argv)) >= 3:
-    #     is_critic_ann = (str(sys.argv[2]).lower() == "ann")
-    # else:
-    #     is_critic_ann = False
+    sim_world = str(sys.argv[1]).lower()
+    if (len(sys.argv)) >= 3:
+        is_critic_ann = (str(sys.argv[2]).lower() == "ann")
+    else:
+        is_critic_ann = False
 
 
-    main(sim_world="tohsw", is_critic_ann=False)
+    main(sim_world, is_critic_ann)
