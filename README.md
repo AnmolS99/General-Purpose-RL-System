@@ -85,6 +85,7 @@ The parameters of the sim worlds can be changed in the `main()` method in the `m
 ## Future work 🚀
 
 Future work on this project could include:
-* **Adding animation for Pole Balancing sim world**: It would be interesting to visualize how the agent solves this problem (similar to how solutions to Towers of Hanoi are visualized), rather than just a graph of the pole angle over time.
+* **Adding animation for Pole Balancing sim world**: It would be nice to visualize how the agent solves this problem (similar to how solutions to Towers of Hanoi are visualized), rather than just a graph of the pole angle over time.
 * **Optimizing code**: Not a lot of time has been used on optimizing the code, and this could be useful as some runs tend to take several minutes.
+* **Create other sim worlds**: It could be interesting to train an agent to solve other puzzles/games!
 
