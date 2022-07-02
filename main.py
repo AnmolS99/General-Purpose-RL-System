@@ -3,9 +3,6 @@ from gambler import GamblerSimWorld
 from pole_balancing import PoleBalancingSimWorld
 from rl_system import RLSystem
 from towers_of_hanoi import TowersOfHanoiSimWorld
-import random
-import numpy as np
-import tensorflow as tf
 
 
 def show_optimal_state_action_gambler(gsw, rls):
@@ -27,14 +24,9 @@ def show_optimal_state_action_gambler(gsw, rls):
 
 
 def run():
-    # Setting random seeds to be able to reproduce results
-    seed = 1001
-    random.seed(seed)
-    np.random.seed(seed)
-    tf.random.set_seed(seed)
 
     # Creating the different sim worlds
-    pbsw = PoleBalancingSimWorld(l=1, m_p=0.3, g=5, timestep=0.5)
+    pbsw = PoleBalancingSimWorld(l=0.5, m_p=0.1, g=-9.8, timestep=0.02)
     num_pegs = 5
     num_discs = 6
     tohsw = TowersOfHanoiSimWorld(num_pegs, num_discs)
@@ -43,11 +35,11 @@ def run():
     # UNCOMMENT THE RLSYSTEM (rls) YOU WANT TO RUN
 
     # Pole balancing with table-based critic
-    rls = RLSystem(pbsw, 2, 300, False, None, 0.3, 0.3, 0.5, 0.5, 0.99, 0.99,
-                   0.5, 0.04, True, 1)
+    rls = RLSystem(pbsw, num_episodes=200, max_steps=300, critic_use_nn=False, critic_nn_specs=None, actor_lr=0.3, critic_lr=0.3,actor_elig_decay= 0.5,critic_elig_decay=0.5,actor_disc_factor=0.99,critic_disc_factor=0.99,
+                   epsilon=0.5,epsilon_decay_rate=0.04,display=True,delay=1)
 
     # Pole balancing with ANN-based critic
-    # rls = RLSystem(pbsw, 3, 300, True, (20, 20, 20, 40, 5, 1), 0.3, 0.3, 0.5,
+    # rls = RLSystem(pbsw, 200, 300, True, (20, 20, 20, 40, 5, 1), 0.3, 0.3, 0.5,
     #                0.5, 0.5, 0.5, 0.5, 0.1, True, 1)
 
     # Towers of Hanoi with table-based critic
